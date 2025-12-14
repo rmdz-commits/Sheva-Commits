@@ -261,23 +261,65 @@
 
     </div>
 
-    <script>
+    
+
+        <script>
         const USERNAME = 'rmdz-commits'; 
         const REPO_NAME = 'M.Sheva-Commits'; 
         const API_URL = `https://api.github.com/repos/rmdz-commits/M.Sheva-Commits/contents`;
 
         const container = document.getElementById('repo-container');
 
+        // --- HELPER: PARSE TANGGAL INDONESIA KE TIMESTAMP ---
+        function parseIndoDate(dateStr) {
+            // Mapping Bulan Indo ke Inggris biar bisa dibaca sistem
+            const monthMap = {
+                'januari': 'January', 'februari': 'February', 'maret': 'March',
+                'april': 'April', 'mei': 'May', 'juni': 'June',
+                'juli': 'July', 'agustus': 'August', 'september': 'September',
+                'oktober': 'October', 'november': 'November', 'desember': 'December',
+                'jan': 'Jan', 'feb': 'Feb', 'mar': 'Mar', 'apr': 'Apr', 'mei': 'May', 'jun': 'Jun',
+                'jul': 'Jul', 'agu': 'Aug', 'sep': 'Sep', 'okt': 'Oct', 'nov': 'Nov', 'des': 'Dec'
+            };
+
+            // 1. Bersihkan string (kecilkan huruf)
+            let cleanStr = dateStr.toLowerCase();
+
+            // 2. Ganti nama bulan Indo jadi Inggris
+            for (const [indo, eng] of Object.entries(monthMap)) {
+                if (cleanStr.includes(indo)) {
+                    cleanStr = cleanStr.replace(indo, eng);
+                    break;
+                }
+            }
+
+            // 3. Coba ubah jadi Date Object
+            const dateObj = new Date(cleanStr);
+
+            // 4. Jika gagal (Invalid Date), kembalikan nilai 0 (paling bawah) atau timestamp sekarang
+            if (isNaN(dateObj.getTime())) return 0; 
+            
+            return dateObj.getTime();
+        }
+
+        // --- 1. LOAD KATEGORI ---
         async function loadCategories() {
             try {
                 const response = await fetch(API_URL);
                 const data = await response.json();
                 if (!Array.isArray(data)) throw new Error("Data tidak ditemukan");
+                
                 container.innerHTML = ''; 
+                
+                // Filter Folder Level 1
                 const folders = data.filter(item => item.type === 'dir');
+
+                // Opsional: Urutkan Kategori (Misal MySQL diatas C++)
+                // folders.sort((a, b) => a.name.localeCompare(b.name)); 
+
                 for (const folder of folders) { createCategoryHTML(folder.name, folder.path); }
             } catch (error) {
-                container.innerHTML = `<div class="loading" style="color:#ff5f56;">Gagal memuat repository.</div>`;
+                container.innerHTML = `<div class="loading" style="color:#ff5f56;">Gagal memuat repository.<br>Pastikan Repo Public.</div>`;
             }
         }
 
@@ -304,26 +346,42 @@
             container.appendChild(div);
         }
 
+        // --- 2. LOGIKA TOGGLE & SORTING WAKTU ---
         async function toggleCategory(header, path) {
             const parent = header.parentElement;
             const contentDiv = document.getElementById(`content-${path}`);
             const wasActive = parent.classList.contains('active');
 
-            // Auto-Collapse Logic
+            // Auto-Collapse yang lain
             const allCategories = document.querySelectorAll('.repo-category');
             allCategories.forEach(cat => { cat.classList.remove('active'); });
 
             if (!wasActive) {
                 parent.classList.add('active'); 
+                
                 if (contentDiv.children.length === 0) {
                     contentDiv.innerHTML = '<div class="loading">Memuat...</div>';
                     try {
                         const res = await fetch(`${API_URL}/${path}`);
                         const items = await res.json();
                         contentDiv.innerHTML = '';
+                        
+                        // Ambil hanya Folder (Tanggal)
                         const dates = items.filter(item => item.type === 'dir');
-                        dates.sort((a, b) => b.name.localeCompare(a.name)); 
+
+                        // === [LOGIKA SORTING BARU] ===
+                        dates.sort((a, b) => {
+                            const timeA = parseIndoDate(a.name); // Ubah "11 Des 2025" jadi angka
+                            const timeB = parseIndoDate(b.name);
+                            
+                            // B - A = Descending (Paling Baru di Atas)
+                            // A - B = Ascending (Paling Lama di Atas)
+                            return timeB - timeA; 
+                        });
+                        // ==============================
+
                         dates.forEach(date => createDateHTML(contentDiv, date.name, date.path));
+                        
                         if(dates.length === 0) contentDiv.innerHTML = '<div class="loading">Kosong.</div>';
                     } catch (e) { contentDiv.innerHTML = '<div class="loading">Error.</div>'; }
                 }
@@ -343,6 +401,7 @@
             parentDiv.appendChild(div);
         }
 
+        // --- 3. FILES ---
         async function toggleDate(header, path) {
             const fileList = document.getElementById(`files-${path}`);
             const parentItem = header.parentElement;
@@ -354,7 +413,14 @@
                     const res = await fetch(`${API_URL}/${path}`);
                     const files = await res.json();
                     fileList.innerHTML = '';
-                    files.filter(f => f.type === 'file').forEach(file => {
+                    
+                    // Filter File
+                    const validFiles = files.filter(f => f.type === 'file');
+
+                    // Opsional: Urutkan File juga (Z-A atau A-Z)
+                    // validFiles.sort((a, b) => b.name.localeCompare(a.name)); // Z-A
+
+                    validFiles.forEach(file => {
                         const link = document.createElement('a');
                         link.href = `view.html?file=${encodeURIComponent(file.download_url)}&name=${encodeURIComponent(file.name)}`;
                         link.className = 'file-link';
