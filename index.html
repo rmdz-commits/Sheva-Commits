@@ -9,6 +9,19 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 
     <style>
+    /* --- PERBAIKAN CELAH PUTIH --- */
+html {
+    background-color: #000000; /* Cat dasar kanvas jadi hitam pekat */
+    height: 100%; /* Pastikan html memenuhi layar */
+}
+
+/* Pastikan body tetap transparan agar background gambar terlihat */
+body {
+    background-color: transparent !important; 
+    min-height: 100vh;
+    margin: 0; padding: 0; /* Reset margin agar tidak ada celah */
+}
+
         /* --- RESET --- */
         * { margin: 0; padding: 0; box-sizing: border-box; }
         
