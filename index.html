@@ -15,99 +15,83 @@ html {
     height: 100%; /* Pastikan html memenuhi layar */
 }
 
-/* Pastikan body tetap transparan agar background gambar terlihat */
+        /* --- RESET --- */
+        *{ margin: 0; padding: 0; box-sizing: border-box; }
+        
+                /* --- 1. SETUP KANVAS (Wajib Paling Atas) --- */
+html {
+    background-color: #000000; /* Menutup celah putih dengan cat hitam */
+    height: 100%;
+}
+
+/* Body dibuat transparan agar Background Gambar terlihat */
 body {
     background-color: transparent !important; 
     min-height: 100vh;
-    margin: 0; padding: 0; /* Reset margin agar tidak ada celah */
-}
-
-        /* --- RESET --- */
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        
-                body {
+    margin: 0; padding: 0;
     font-family: 'Montserrat', sans-serif;
-    background-color: #000;
-    /* Hapus background-image, size, position, attachment dari sini */
-    min-height: 100vh; color: white; overflow-x: hidden;
-    opacity: 0; animation: fadeInPage 0.8s ease-out forwards;
+    color: white;
+    overflow-x: hidden;
+    opacity: 0; animation: fadeInPage 0.8s ease-out forwards; /* Animasi page load */
 }
 
+@keyframes fadeInPage { to { opacity: 1; } }
+body.fade-out { opacity: 0; transition: opacity 0.5s ease; }
 
-        @keyframes fadeInPage { to { opacity: 1; } }
-        body.fade-out { opacity: 0; transition: opacity 0.5s ease; }
 
-        /* --- BACKGROUND --- */
-/* --- SETTING BACKGROUND AGAR DIAM (FIXED) --- */
-
-/* 1. Gambar Background (Lapisan Paling Bawah: 0) */
-/* --- BACKGROUND ANTI BADAI (FIXED TOTAL) --- */
-/* --- BACKGROUND CINEMATIC (Anti-Celah & Smooth Zoom) --- */
+/* --- 2. BACKGROUND CINEMATIC (Sama seperti Resume/About) --- */
 .bg-fixed {
     position: fixed;
-    /* Kita tarik gambar sedikit ke atas dan kiri agar sentral */
-    top: -10%; 
-    left: -10%; 
-    
-    /* UKURAN RAKSASA: Kita buat 120% dari layar.
-       Jadi kalau address bar Chrome gerak (cuma beda 10-15%), 
-       gambar ini masih sisa banyak. Gak bakal bocor! */
-    width: 120%; 
-    height: 120vh; 
+    top: -10%; left: -10%;
+    width: 120%; height: 120vh; /* Ukuran Raksasa Anti-Celah */
     
     background-image: url('https://ik.imagekit.io/rmdzAV/Sheva%20Personality/Background.jpg');
     background-size: cover;
-    background-position: center center;
+    background-position: center;
     background-repeat: no-repeat;
-    
     z-index: 0;
     
-    /* ANIMASI ZOOM (Bernafas) */
-    /* Gambar akan zoom in pelan-pelan lalu zoom out lagi selamanya */
-    animation: smoothZoom 20s ease-in-out infinite alternate;
-    
-    /* Optimasi performa HP */
+    /* Animasi Smooth Zoom */
     will-change: transform;
     transform: translateZ(0); 
+    animation: smoothZoom 20s ease-in-out infinite alternate;
 }
 
-/* KUNCI ANIMASINYA DISINI */
 @keyframes smoothZoom {
-    0% {
-        transform: scale(1) translateZ(0);
-    }
-    100% {
-        /* Zoom sedikit saja biar elegan, jangan terlalu ekstrim */
-        transform: scale(1.1) translateZ(0); 
-    }
+    0% { transform: scale(1) translateZ(0); }
+    100% { transform: scale(1.1) translateZ(0); }
 }
 
-/* Pastikan Overlay juga menutupi area raksasa tersebut */
-.overlay, .grid-overlay {
+
+/* --- 3. SPESIAL GRID OVERLAY (Index Only) --- */
+/* Masalah sebelumnya: Grid menimpa kegelapan. Solusi: Pisahkan! */
+.grid-overlay {
     position: fixed;
     top: -10%; left: -10%;
     width: 120%; height: 120vh; /* Ikuti ukuran background */
-    background: rgba(0, 0, 0, 0.75);
     z-index: 1;
     pointer-events: none;
-}
 
-/* Khusus Index grid (timpa background overlay biasa) */
-.grid-overlay {
-    background: linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+    /* LAPISAN 1: Warna Gelap (75% Hitam) */
+    background-color: rgba(0, 0, 0, 0.75); 
+    
+    /* LAPISAN 2: Motif Kotak-kotak (Grid) */
+    background-image: 
+        linear-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
     background-size: 50px 50px;
 }
 
-/* 3. Konten (Lapisan Paling Atas: 2) */
+
+/* --- 4. CONTAINER --- */
 .container {
-    position: relative;     /* KUNCI: Relative berarti dia BISA discroll normal */
-    z-index: 2;             /* Paling atas agar teks bisa dibaca/diklik */
+    position: relative;
+    z-index: 2; /* Di atas segalanya */
     max-width: 1200px; 
     margin: 0 auto; 
     padding: 0 40px 60px 40px; 
-    /* Hapus 'height: 100vh' di resume/about agar bisa discroll panjang */
 }
+
 
         /* --- NAVBAR --- */
         nav {
