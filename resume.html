@@ -21,50 +21,57 @@
 
 /* --- SETTING BACKGROUND AGAR DIAM (FIXED) --- */
 
-/* 1. Gambar Background (Lapisan Paling Bawah: 0) */
-/* --- BACKGROUND ANTI BADAI (FIXED TOTAL) --- */
+/* --- BACKGROUND CINEMATIC (Anti-Celah & Smooth Zoom) --- */
 .bg-fixed {
     position: fixed;
-    top: 0; 
-    left: 0; 
-    bottom: 0; 
-    right: 0; /* Mengunci ke 4 sudut layar */
-    width: auto; 
-    height: auto; /* Biarkan browser yang nentukan, jangan 100% */
+    /* Kita tarik gambar sedikit ke atas dan kiri agar sentral */
+    top: -10%; 
+    left: -10%; 
+    
+    /* UKURAN RAKSASA: Kita buat 120% dari layar.
+       Jadi kalau address bar Chrome gerak (cuma beda 10-15%), 
+       gambar ini masih sisa banyak. Gak bakal bocor! */
+    width: 120%; 
+    height: 120vh; 
     
     background-image: url('https://ik.imagekit.io/rmdzAV/Sheva%20Personality/Background.jpg');
     background-size: cover;
     background-position: center center;
     background-repeat: no-repeat;
     
-    z-index: 0; /* Lapisan paling bawah */
+    z-index: 0;
     
-    /* HACK PENTING BUAT HP: */
-    /* Ini memaksa HP merender gambar pakai GPU, jadi gak bakal goyang */
+    /* ANIMASI ZOOM (Bernafas) */
+    /* Gambar akan zoom in pelan-pelan lalu zoom out lagi selamanya */
+    animation: smoothZoom 20s ease-in-out infinite alternate;
+    
+    /* Optimasi performa HP */
+    will-change: transform;
     transform: translateZ(0); 
-    -webkit-transform: translateZ(0);
-    will-change: transform; 
 }
 
-/* Pastikan Body transparan agar background kelihatan */
-body {
-    background-color: transparent !important; /* Paksa transparan */
-    min-height: 100vh;
-    /* ... sisa kode body lainnya (font, color, anim) tetap sama ... */
+/* KUNCI ANIMASINYA DISINI */
+@keyframes smoothZoom {
+    0% {
+        transform: scale(1) translateZ(0);
+    }
+    100% {
+        /* Zoom sedikit saja biar elegan, jangan terlalu ekstrim */
+        transform: scale(1.1) translateZ(0); 
+    }
 }
 
-
-/* 2. Overlay Gelap (Lapisan Tengah: 1) */
-.overlay, .grid-overlay {   /* Support untuk overlay polos maupun grid */
-    position: fixed;        /* KUNCI: Overlay juga diam, tidak ikut scroll */
-    top: 0; left: 0; 
-    width: 100%; height: 100%;
-    background: rgba(0, 0, 0, 0.75); /* Atur kegelapan di sini */
-    z-index: 1;             /* Di atas gambar */
-    pointer-events: none;   /* Agar klik tembus ke bawah jika perlu */
+/* Pastikan Overlay juga menutupi area raksasa tersebut */
+.overlay, .grid-overlay {
+    position: fixed;
+    top: -10%; left: -10%;
+    width: 120%; height: 120vh; /* Ikuti ukuran background */
+    background: rgba(0, 0, 0, 0.75);
+    z-index: 1;
+    pointer-events: none;
 }
 
-/* KHUSUS Index.html yang pakai Grid, timpa backgroundnya */
+/* Khusus Index grid (timpa background overlay biasa) */
 .grid-overlay {
     background: linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
                 linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
