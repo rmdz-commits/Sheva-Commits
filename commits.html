@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Commits - M. Sheva Raditya</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+    <style>
+        /* --- 1. SETUP KANVAS --- */
+        html { background-color: #000000; height: 100%; }
+        body {
+            background-color: transparent !important;
+            min-height: 100vh; margin: 0; padding: 0;
+            font-family: 'Montserrat', sans-serif; color: white;
+            overflow-x: hidden; opacity: 0; animation: fadeInPage 0.8s ease-out forwards;
+        }
+
+        /* --- BACKGROUND FIX --- */
+        .bg-fixed {
+            position: fixed; top: -10%; left: -10%; width: 120%; height: 120vh;
+            background-image: url('https://ik.imagekit.io/rmdzAV/Sheva%20Personality/Background.jpg');
+            background-size: cover; background-position: center;
+            z-index: 0; animation: smoothZoom 20s ease-in-out infinite alternate;
+        }
+        .overlay {
+            position: fixed; top: -10%; left: -10%; width: 120%; height: 120vh;
+            background: rgba(0, 0, 0, 0.85); /* Gelap agar konten terbaca */
+            z-index: 1; pointer-events: none;
+        }
+
+        @keyframes smoothZoom { 0% { transform: scale(1); } 100% { transform: scale(1.1); } }
+        @keyframes fadeInPage { to { opacity: 1; } }
+        body.fade-out { opacity: 0; transition: opacity 0.5s ease; }
+
+        /* --- CONTAINER --- */
+        .container { 
+            position: relative; z-index: 2; 
+            max-width: 1200px; margin: 0 auto; 
+            padding: 0 40px 60px 40px; 
+        }
+
+        /* --- NAVBAR (SAMA DENGAN RESUME) --- */
+        nav { display: flex; justify-content: space-between; align-items: center; padding: 30px 0; margin-bottom: 40px; z-index: 10; }
+        .logo { font-weight: 800; font-size: 20px; letter-spacing: 1px; }
+        .logo span { color: #FF5400; }
+        .nav-links {
+            display: flex; gap: 30px; list-style: none;
+            background: rgba(255,255,255,0.05); padding: 12px 30px;
+            border-radius: 50px; backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        .nav-links a { text-decoration: none; color: #ccc; font-size: 14px; font-weight: 600; transition: 0.3s; }
+        .nav-links a:hover, .nav-links a.active { color: #FF5400; }
+        .contact-btn {
+            text-decoration: none; color: white; display: none; padding: 10px 25px; 
+            border: 1px solid white; border-radius: 30px; font-size: 14px; font-weight: 600; transition: 0.3s; cursor: pointer;
+        }
+        .contact-btn:hover { background: white; color: black; box-shadow: 0 0 15px white; }
+        @media (orientation: landscape) { .contact-btn { display: block; } }
+
+
+        /* =========================================
+           STYLE KHUSUS COMMITS (INTERACTIVE GLOW)
+           ========================================= */
+        
+        /* 1. KATEGORI (MySQL / C++) */
+        .repo-category {
+            margin-bottom: 25px;
+            border-radius: 15px;
+            position: relative;
+            
+            /* GLASS EFFECT BASE */
+            background: rgba(20, 20, 20, 0.7); 
+            backdrop-filter: blur(10px); /* Blur background belakang card */
+            
+            /* BORDER & GLOW (NON-SELECTED: WHITE GLOW) */
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 5px 20px rgba(255, 255, 255, 0.05); /* Glow Putih Redup */
+            
+            /* ANIMASI TRANSISI HALUS (Cubic Bezier = Pegas Halus) */
+            transition: all 0.5s cubic-bezier(0.25, 1, 0.5, 1);
+        }
+
+        /* HOVER STATE (Saat mouse lewat tapi belum klik) */
+        .repo-category:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(255, 255, 255, 0.15); /* Glow Putih Terang */
+            border-color: rgba(255, 255, 255, 0.3);
+        }
+
+        /* STATE AKTIF (SELECTED: ORANGE GLOW BLEND) */
+        .repo-category.active {
+            background: rgba(15, 15, 15, 0.9);
+            /* Transisi warna Glow dari Putih ke Orange */
+            box-shadow: 0 0 40px rgba(255, 84, 0, 0.25), inset 0 0 20px rgba(255, 84, 0, 0.05);
+            border-color: rgba(255, 84, 0, 0.5); /* Border jadi orange */
+            transform: scale(1.01); /* Sedikit membesar agar fokus */
+        }
+
+        /* Header Kategori */
+        .cat-header {
+            padding: 25px 30px;
+            cursor: pointer;
+            display: flex; align-items: center; justify-content: space-between;
+        }
+        
+        /* Judul & Ikon */
+        .cat-title { 
+            font-size: 20px; font-weight: 700; 
+            display: flex; align-items: center; gap: 20px; 
+            color: #ddd; /* Putih agak redup */
+            transition: color 0.4s ease;
+        }
+        
+        .repo-category.active .cat-title {
+            color: #FF5400; /* Jadi Orange saat aktif */
+            text-shadow: 0 0 15px rgba(255, 84, 0, 0.5);
+        }
+
+        .cat-icon-img { 
+            width: 40px; display: flex; justify-content: center; 
+            transition: transform 0.4s ease;
+            color: #ccc;
+        }
+        
+        .repo-category.active .cat-icon-img { 
+            transform: scale(1.2) rotate(-5deg); /* Animasi ikon */
+            color: #FF5400;
+        }
+
+        /* Panah Toggle */
+        .toggle-icon { 
+            font-size: 18px; color: #666; transition: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55); /* Bouncy effect */
+        }
+        .repo-category.active .toggle-icon { 
+            transform: rotate(180deg); 
+            color: #FF5400; 
+        }
+
+
+        /* 2. AREA KONTEN (ISI TANGGAL) */
+        .cat-content {
+            max-height: 0; overflow: hidden; 
+            transition: max-height 0.6s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.4s, padding 0.4s;
+            opacity: 0;
+            padding: 0 30px;
+        }
+        .repo-category.active .cat-content {
+            max-height: 2000px; 
+            opacity: 1;
+            padding-bottom: 30px; 
+            padding-top: 10px;
+        }
+
+        /* 3. ITEM TANGGAL (PILL STYLE) */
+        .date-item {
+            background-color: #0a0a0a;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            margin-bottom: 15px;
+            overflow: hidden;
+            transition: 0.3s;
+        }
+        .date-item:hover { 
+            border-color: rgba(255, 255, 255, 0.2); 
+            background-color: #111;
+            transform: translateX(5px); /* Geser sedikit saat hover */
+        }
+
+        .date-header {
+            padding: 15px 20px; cursor: pointer;
+            display: flex; align-items: center; gap: 15px;
+            font-size: 14px; font-weight: 600; color: #ccc;
+        }
+        .date-header:hover { color: white; }
+        
+        .arrow-small { 
+            margin-left: auto; font-size: 12px; opacity: 0.5; 
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
+        }
+        .date-item.active .arrow-small { transform: rotate(90deg); opacity: 1; color: #FF5400; }
+
+
+        /* 4. LIST FILE (TREE STRUCTURE) */
+        .file-list {
+            display: none; background: #0a0a0a; padding-bottom: 15px;
+        }
+        .date-item.active .file-list { display: block; animation: slideDown 0.4s ease; }
+
+        .file-link {
+            display: flex; align-items: center; 
+            margin-left: 28px; padding: 8px 15px 8px 30px; 
+            position: relative; text-decoration: none; transition: 0.2s;
+        }
+        .file-link::before { 
+            content: ''; position: absolute; left: 10px; top: -10px; bottom: 50%;
+            width: 2px; background: #333;
+        }
+        .file-link::after { 
+            content: ''; position: absolute; left: 10px; top: 50%; width: 15px; height: 2px;
+            background: #333;
+        }
+
+        .file-arrow {
+            margin-right: 10px; font-size: 10px; color: #555;
+            position: relative; left: -5px; transition: 0.3s;
+        }
+
+        .file-box {
+            background: #151515; padding: 10px 15px; border-radius: 8px;
+            display: flex; align-items: center; gap: 10px;
+            font-family: 'Fira Code', monospace; font-size: 13px; color: #aaa;
+            border: 1px solid rgba(255, 255, 255, 0.05); transition: 0.3s; width: 100%;
+        }
+        
+        .file-link:hover .file-box {
+            background: rgba(255, 84, 0, 0.1); border-color: #FF5400; color: #FF5400;
+            box-shadow: 0 0 15px rgba(255,84,0,0.15); /* Glow file saat hover */
+        }
+        .file-link:hover .file-arrow { color: #FF5400; }
+        .file-icon { color: #FF5400; font-size: 14px; }
+
+        .loading { text-align: center; padding: 20px; color: #888; font-size: 12px; font-style: italic; }
+        @keyframes slideDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+
+        @media (max-width: 900px) {
+            .container { padding: 0 20px; }
+            nav { flex-direction: column; gap: 15px; padding-top: 20px; } 
+            .nav-links { width: 100%; justify-content: center; padding: 10px; gap: 10px; font-size: 12px; }
+        }
+        @media (orientation: landscape) and (max-height: 600px) {
+            nav { flex-direction: row; padding: 10px 0; }
+            .nav-links { display: flex; font-size: 11px; padding: 8px 15px; }
+            .contact-btn { display: block; font-size: 11px; padding: 8px 15px; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="bg-fixed"></div>
+    <div class="overlay"></div>
+
+    <div class="container">
+        <nav>
+            <div class="logo">M.SHEVA<span>.COMMITS</span></div>
+            <ul class="nav-links">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="about.html">About</a></li>
+                <li><a href="resume.html">Resume</a></li>
+                <li><a href="#" class="active">Commit</a></li>
+            </ul>
+            <a href="mailto:motion.zef.0504@gmail.com" class="contact-btn">Contact Me</a>
+        </nav>
+
+        <div id="repo-container">
+            <div class="loading">Menghubungkan ke GitHub...</div>
+        </div>
+
+    </div>
+
+    <script>
+        const USERNAME = 'rmdz-commits'; 
+        const REPO_NAME = 'M.Sheva-Commits'; 
+        const API_URL = `https://api.github.com/repos/rmdz-commits/M.Sheva-Commits/contents`;
+
+        const container = document.getElementById('repo-container');
+
+        async function loadCategories() {
+            try {
+                const response = await fetch(API_URL);
+                const data = await response.json();
+                if (!Array.isArray(data)) throw new Error("Data tidak ditemukan");
+                container.innerHTML = ''; 
+                const folders = data.filter(item => item.type === 'dir');
+                for (const folder of folders) { createCategoryHTML(folder.name, folder.path); }
+            } catch (error) {
+                container.innerHTML = `<div class="loading" style="color:#ff5f56;">Gagal memuat repository.</div>`;
+            }
+        }
+
+        function createCategoryHTML(name, path) {
+            const div = document.createElement('div');
+            div.className = 'repo-category'; 
+            
+            let iconClass = 'fas fa-folder';
+            if (name.toLowerCase().includes('mysql')) iconClass = 'fas fa-database';
+            if (name.toLowerCase().includes('c++')) iconClass = 'fab fa-cuttlefish';
+            if (name.toLowerCase().includes('python')) iconClass = 'fab fa-python';
+            if (name.toLowerCase().includes('html') || name.toLowerCase().includes('web')) iconClass = 'fab fa-html5';
+            
+            div.innerHTML = `
+                <div class="cat-header" onclick="toggleCategory(this, '${path}')">
+                    <div class="cat-title">
+                        <div class="cat-icon-img"><i class="${iconClass}"></i></div>
+                        ${name}
+                    </div>
+                    <i class="fas fa-caret-down toggle-icon"></i> 
+                </div>
+                <div class="cat-content" id="content-${path}"></div>
+            `;
+            container.appendChild(div);
+        }
+
+        async function toggleCategory(header, path) {
+            const parent = header.parentElement;
+            const contentDiv = document.getElementById(`content-${path}`);
+            const wasActive = parent.classList.contains('active');
+
+            // Auto-Collapse Logic
+            const allCategories = document.querySelectorAll('.repo-category');
+            allCategories.forEach(cat => { cat.classList.remove('active'); });
+
+            if (!wasActive) {
+                parent.classList.add('active'); 
+                if (contentDiv.children.length === 0) {
+                    contentDiv.innerHTML = '<div class="loading">Memuat...</div>';
+                    try {
+                        const res = await fetch(`${API_URL}/${path}`);
+                        const items = await res.json();
+                        contentDiv.innerHTML = '';
+                        const dates = items.filter(item => item.type === 'dir');
+                        dates.sort((a, b) => b.name.localeCompare(a.name)); 
+                        dates.forEach(date => createDateHTML(contentDiv, date.name, date.path));
+                        if(dates.length === 0) contentDiv.innerHTML = '<div class="loading">Kosong.</div>';
+                    } catch (e) { contentDiv.innerHTML = '<div class="loading">Error.</div>'; }
+                }
+            }
+        }
+
+        function createDateHTML(parentDiv, dateName, path) {
+            const div = document.createElement('div');
+            div.className = 'date-item'; 
+            div.innerHTML = `
+                <div class="date-header" onclick="toggleDate(this, '${path}')">
+                    <i class="far fa-folder"></i> ${dateName}
+                    <i class="fas fa-play arrow-small"></i> 
+                </div>
+                <div class="file-list" id="files-${path}"></div>
+            `;
+            parentDiv.appendChild(div);
+        }
+
+        async function toggleDate(header, path) {
+            const fileList = document.getElementById(`files-${path}`);
+            const parentItem = header.parentElement;
+            parentItem.classList.toggle('active');
+
+            if (parentItem.classList.contains('active') && fileList.children.length === 0) {
+                fileList.innerHTML = '<div class="loading">...</div>';
+                try {
+                    const res = await fetch(`${API_URL}/${path}`);
+                    const files = await res.json();
+                    fileList.innerHTML = '';
+                    files.filter(f => f.type === 'file').forEach(file => {
+                        const link = document.createElement('a');
+                        link.href = `view.html?file=${encodeURIComponent(file.download_url)}&name=${encodeURIComponent(file.name)}`;
+                        link.className = 'file-link';
+                        link.innerHTML = `
+                            <i class="fas fa-caret-right file-arrow"></i>
+                            <div class="file-box">
+                                <i class="fas fa-code file-icon"></i>
+                                ${file.name}
+                            </div>
+                        `;
+                        link.addEventListener('click', (e) => {
+                            e.preventDefault();
+                            document.body.classList.add('fade-out');
+                            setTimeout(() => { window.location.href = link.href; }, 500);
+                        });
+                        fileList.appendChild(link);
+                    });
+                } catch (e) { fileList.innerHTML = '<div class="loading">Error.</div>'; }
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            loadCategories();
+            const links = document.querySelectorAll('.nav-links a');
+            links.forEach(link => {
+                link.addEventListener('click', (e) => {
+                    const href = link.getAttribute('href');
+                    if (href && href !== '#' && !href.startsWith('http')) {
+                        e.preventDefault();
+                        document.body.classList.add('fade-out');
+                        setTimeout(() => { window.location.href = href; }, 500);
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>
