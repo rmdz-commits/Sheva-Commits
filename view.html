@@ -33,7 +33,7 @@
 
         .overlay {
             position: fixed; top: -10%; left: -10%; width: 120%; height: 120vh;
-            background: rgba(0, 0, 0, 0.75); /* Overlay lebih tipis agar blur terlihat */
+            background: rgba(0, 0, 0, 0.75);
             z-index: 1; pointer-events: none;
         }
 
@@ -53,45 +53,96 @@
         .back-btn:hover { background: #FF5400; border-color: #FF5400; color: white; box-shadow: 0 0 15px #FF5400; }
         .file-name { font-family: 'Fira Code', monospace; color: #FF5400; font-weight: 500; text-shadow: 0 0 10px rgba(255,84,0,0.5); }
 
-        /* CODE CONTAINER (GLASSMORPHISM STYLE LIKE INDEX.HTML) */
+        /* CODE CONTAINER */
         .code-container {
             flex: 1; max-width: 1000px; width: 90%; margin: 40px auto;
-            
-            /* KUNCI GLASS EFFECT */
-            background: rgba(20, 20, 20, 0.65); /* Transparan */
-            backdrop-filter: blur(20px); /* Blur background belakang */
-            -webkit-backdrop-filter: blur(20px); /* Untuk Safari */
-            
+            background: rgba(20, 20, 20, 0.65);
+            backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
             border-radius: 15px; 
-            border: 1px solid rgba(255, 255, 255, 0.1); /* Border halus */
+            border: 1px solid rgba(255, 255, 255, 0.1);
             box-shadow: 0 20px 50px rgba(0,0,0,0.5);
-            
             overflow: hidden; display: flex; flex-direction: column;
-            animation: float 6s ease-in-out infinite; /* Sedikit melayang */
+            animation: float 6s ease-in-out infinite;
         }
         
         @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
         
+        /* WINDOW BAR (HEADER CARD) */
         .window-bar {
-            background: rgba(255, 255, 255, 0.05); /* Sedikit terang */
-            padding: 12px 15px; display: flex; gap: 8px;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 12px 15px; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center;
             border-bottom: 1px solid rgba(255,255,255,0.1);
         }
+
+        /* Grup Titik Mac (Kiri) */
+        .dots-group { display: flex; gap: 8px; }
         .dot { width: 12px; height: 12px; border-radius: 50%; }
         .red { background: #ff5f56; } .yellow { background: #ffbd2e; } .green { background: #27c93f; }
 
+        /* Grup Word Wrap (Kanan) */
+        .wrap-toggle-group {
+            display: flex; align-items: center; gap: 10px;
+            font-size: 12px; font-weight: 600; color: #aaa;
+            font-family: 'Montserrat', sans-serif;
+            cursor: pointer; transition: 0.3s;
+        }
+        .wrap-toggle-group:hover { color: #fff; }
+        
+        /* --- CUSTOM CHECKBOX DESIGN (NEON GLOW) --- */
+        .wrap-toggle-group input[type="checkbox"] {
+            /* Reset Default Style */
+            appearance: none; -webkit-appearance: none;
+            
+            width: 16px; height: 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+
+            /* STATE OFF: Putih Transparan + Glow Putih Redup */
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            box-shadow: 0 0 5px rgba(255, 255, 255, 0.1); 
+        }
+
+        /* STATE ON: Orange + Glow Orange Kuat */
+        .wrap-toggle-group input[type="checkbox"]:checked {
+            background: #FF5400;
+            border-color: #FF5400;
+            box-shadow: 0 0 10px #FF5400, 0 0 20px rgba(255, 84, 0, 0.5); /* Efek Neon */
+        }
+
+        /* Icon Centang Manual (Agar terlihat jelas) */
+        .wrap-toggle-group input[type="checkbox"]:checked::after {
+            content: '✔';
+            color: white; font-size: 10px; font-weight: bold;
+            position: absolute; top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        /* KONTEN KODE */
         .code-content {
             padding: 20px; overflow-x: auto; margin: 0;
-            font-family: 'Fira Code', monospace; font-size: 13px; line-height: 1.6;
-            background: transparent !important; /* Biar nembus glass effect */
+            font-family: 'Fira Code', monospace; font-size: 12px; line-height: 1.6;
+            background: transparent !important;
             text-shadow: none !important;
+            
+            /* Default: Scroll Horizontal */
+            white-space: pre; 
+            overflow-wrap: normal;
         }
         
-        /* Prism Override agar transparan */
-        pre[class*="language-"] { background: transparent !important; margin: 0 !important; text-shadow: none !important; }
-        code[class*="language-"], pre[class*="language-"] { text-shadow: none !important; }
+        /* Override Style bawaan Prism JS */
+        pre[class*="language-"], code[class*="language-"] { 
+            background: transparent !important; 
+            margin: 0 !important; 
+            text-shadow: none !important; 
+        }
 
-        /* SCROLLBAR CUSTOM */
+        /* SCROLLBAR */
         ::-webkit-scrollbar { width: 8px; height: 8px; }
         ::-webkit-scrollbar-track { background: rgba(0,0,0,0.3); }
         ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 4px; }
@@ -101,6 +152,7 @@
             .preview-nav { padding: 15px 20px; flex-direction: column; gap: 15px; }
             .file-name { order: -1; margin-bottom: 5px; }
             .code-container { margin: 20px auto; width: 95%; }
+            .code-content { font-size: 10px; line-height: 1.5; }
         }
     </style>
 </head>
@@ -117,8 +169,16 @@
 
     <div class="code-container">
         <div class="window-bar">
-            <div class="dot red"></div><div class="dot yellow"></div><div class="dot green"></div>
+            <div class="dots-group">
+                <div class="dot red"></div><div class="dot yellow"></div><div class="dot green"></div>
+            </div>
+            
+            <label class="wrap-toggle-group">
+                Word Wrap
+                <input type="checkbox" id="wordWrapToggle">
+            </label>
         </div>
+
         <pre><code id="codeBlock" class="language-clike">Fetching data...</code></pre>
     </div>
 
@@ -128,6 +188,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
 
     <script>
+        // Back Button
         document.getElementById('backBtn').addEventListener('click', (e) => {
             e.preventDefault();
             document.body.classList.add('fade-out');
@@ -140,7 +201,25 @@
 
         const titleEl = document.getElementById('fileNameTitle');
         const codeEl = document.getElementById('codeBlock');
+        const preEl = codeEl.parentElement; // Element <pre>
 
+        // --- FITUR WORD WRAP (PERBAIKAN LOGIKA) ---
+        const wrapToggle = document.getElementById('wordWrapToggle');
+        
+        wrapToggle.addEventListener('change', function() {
+            // Kita terapkan style ke DUA elemen sekaligus (<pre> dan <code>)
+            // Ini untuk memastikan Prism.js tidak menimpa settingan kita
+            const modeWrap = this.checked ? 'pre-wrap' : 'pre';
+            const modeBreak = this.checked ? 'break-word' : 'normal';
+
+            // Pakai setProperty 'important' untuk memaksa style
+            preEl.style.setProperty('white-space', modeWrap, 'important');
+            codeEl.style.setProperty('white-space', modeWrap, 'important');
+            
+            preEl.style.overflowWrap = modeBreak;
+        });
+
+        // --- FETCH DATA ---
         if (fileName) {
             titleEl.textContent = fileName;
             const ext = fileName.split('.').pop().toLowerCase();
